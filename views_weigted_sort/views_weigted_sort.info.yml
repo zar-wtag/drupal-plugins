@@ -1,0 +1,9 @@
+name: 'Views Weighted Sort'
+description: 'Views Sort Plugin to implement weighted sort with Views.'
+core_version_requirement: ^8.8 || ^9
+version: '8.x-1.0'
+package: 'Country'
+type: module
+dependencies:
+  - drupal:views
+  - drupal:Country

@@ -1,0 +1,121 @@
+<?php
+
+/**
+ * @file
+ * Views Sort Plugin to implement weighted sort with Views.
+ */
+
+/**
+ * Implements hook_views_data().
+ */
+function views_weigted_sort_views_data() {
+  $viewsData = [];
+
+  $viewsData['node__field_country']['table'] = [
+    'group' => t('Country table'),
+    // This is a base table, so we declare it to Views.
+    'base' => [
+      // The primary key of this table. Views utilizes it for various internal
+      // tasks. In fact, Views module requires all base tables to have a single-
+      // column primary key.
+      'field' => 'id',
+      'title' => t('Country table storing country codes.'),
+      'help' => t('This table has all the entity reference details for each country field.'),
+    ],
+  ];
+
+  // As we describe the Views field 'label' that belongs to 'node__field_country' table, we
+  // nest it respectively within $views_data array.
+  $viewsData['node__field_country']['label'] = [
+    // Human friendly name of your Views field.
+    'title' => t('Country'),
+    // A little more verbose description of your Views field.
+    'help' => t('Name of the country.'),
+    // Apart from field we could also describe sorting, filtering on this
+    // column, but for now let's just stick to the 'field' part.
+    'field' => [
+      // In the 'id' key we place the name of Views field plugin that is
+      // responsible for operating our 'label' column. The id "standard"
+      // corresponds to \Drupal\views\Plugin\views\field\Standard class. It is
+      // an extremely simplistic straightforward field plugin that appends the
+      // column into SELECT query (see ::query() method) and then displays the
+      // fetched column as field output (see ::render() method).
+      'id' => 'standard',
+    ],
+    // So let's tell Views sorting by this column is actually possible.
+    'sort' => [
+      // The id "standard" corresponds to
+      // \Drupal\views\Plugin\views\sort\Standard class. It is a dead straight
+      // forward implementation of sorting that blindly sorts like:
+      // "ORDER BY [column name] [sort direction, i.e. ASC/DESC]". This is just
+      // good enough given we want to sort by country label with custom sort.
+      'id' => 'standard',
+    ],
+    // By declaring 'filter' key we communicate to Views that this column can be
+    // filtered on.
+    'filter' => [
+      // The id "string" corresponds to
+      // \Drupal\views\Plugin\views\filter\StringFilter which according to its
+      // documentation is a reasonable filter for columns that contain strings.
+      'id' => 'string',
+    ],
+  ];
+
+  $viewsData['node__field_country']['weight'] = [
+    'title' => t('Country weight'),
+    'help' => t('Set country weights to apply custom sort.'),
+    'field' => [
+      // Note that now in the 'id' key we are using ID of the Views field plugin
+      // we have just coded.
+      'id' => 'country_weight',
+      // As our custom 'country_weight' plugin requires additional definition,
+      // let's properly supply to it name of the column that holds weight_value of
+      // weight.
+      'additional fields' => [
+        'weight_values' => 'field_country_value',
+      ],
+    ],
+    'sort' => [
+      // Observe that we tell Views to use our custom sort handler for sorting
+      // by this column.
+      'id' => 'country_weight',
+      // As our sort handler expects 2 additional definition items, let us
+      // provide them correspondingly.
+      'weight_value_column' => 'field_country_value',
+      'match_column' => 'CH',
+    ],
+    // The below key specifies to Views that it is also possible to filter by
+    // this column and in order to do filtering, it should use the
+    // 'country_weight' filter handler. As we have agreed, this filter handler
+    // expects only 1 definition item - name of the column where weight weight_values
+    // are stored.
+    'filter' => [
+      'id' => 'country_weight',
+      'weight_value_column' => 'field_country_value',
+    ],
+  ];
+
+  $viewsData['node__field_country_relations']['table'] = [
+    'title' => t('Related country'),
+    'group' => t('We would probably want to place this table into the same group as its base table for consistency in the UI.'),
+    // Watch out! This is not a base table, so we use a different key and
+    // explain to Views how this table can be JOINed to our base table of
+    // 'country'.
+    'join' => [
+      // We are explaining Views how 'node__field_country_relations' can be JOINed to 'country'.
+      // By the way, you do not necessarily have to JOIN onto a base table. You
+      // may as well JOIN in chain a few non-base tables. Although for a table
+      // to become visible in Views UI, it must be connected one way or another
+      // to a base table on which the view is being built.
+      'node__field_country' => [
+        // Column from 'country' table which will participate in the JOIN clause.
+        'left_field' => 'field_country_value',
+        // Column from 'node__field_country_relations' table that will participate in the JOIN
+        // clause.
+        'field' => 'country_id',
+      ],
+    ],
+  ];
+
+  return $viewsData;
+}
