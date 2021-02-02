@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * @file
+ * Implements hook_schema().
+ */
+
+function country_top_schema(): array {
+  // Define second table to determine if RSVP is enabled for a specific node.
+  $schema = [];
+  $schema['country_top_enabled'] = [
+    'description' => 'Tracks whether alter view query for country at top is enabled for a view.',
+    'fields' => [
+      // Define the table fields.
+      'vid' => [
+        'description' => 'The vid that has alter view query for country at top enabled.',
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ],
+    ],
+    // Define the primary keys.
+    'primary key' => ['vid'],
+  ];
+  return $schema;
+}

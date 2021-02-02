@@ -1,0 +1,9 @@
+# define a form for setting admin configuration
+country_top.admin_settings:
+  # define the path for the page
+  path: '/admin/config/content/country_top'
+  defaults:
+    _form: '\Drupal\country_top\Form\CountryTopSettingsForm'
+    _title: 'Set Country Top Settings'
+  requirements:
+    _permission: 'administer country_top'

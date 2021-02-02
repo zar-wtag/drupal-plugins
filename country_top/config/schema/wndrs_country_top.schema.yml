@@ -1,0 +1,11 @@
+# Schema for the configuration file of wndrs_alter_view_query module country_top.
+country_top.settings:
+  type: config_object
+  label: 'Wondrous Set Country at Top'
+  mapping:
+    allowed_types:
+      type: sequence
+      label: 'Query alter Wondrous Set Country at Top can display on'
+      sequence:
+        type: string
+        label: 'Content type'

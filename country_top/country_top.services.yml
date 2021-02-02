@@ -1,0 +1,4 @@
+services:
+  country_top.enabler:
+    class: Drupal\country_top\EnablerService
+    arguments: ['@config.factory']

@@ -1,0 +1,10 @@
+# pick up the routing from "country_top.routing.yml" file.
+country_top.admin_settings:
+  # add a menu item to the administration menu
+  title: 'Set Country Top Settings'
+  description: 'Control the display of View Query Sort order if Country is used as a filter'
+  route_name: country_top.admin_settings
+  # place the configuration settings in the admin config content area.
+  parent: system.admin_config_content
+  # place the menu at the far right.
+  weight: 10

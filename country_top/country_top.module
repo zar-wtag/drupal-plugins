@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * @file
+ * Set Country Top Module Hooks.
+ */
+
+use Drupal\Core\Database\Query;
+use Drupal\views\ViewExecutable;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+
+/**
+ * Implements hook_views_query_alter().
+ *
+ * @param Drupal\views\ViewExecutable $view
+ * @param Drupal\views\Plugin\views\query\QueryPluginBase $query
+ */
+function country_top_views_query_alter(ViewExecutable $view, QueryPluginBase $query): void {
+  $enabler = \Drupal::service('country_top.enabler');
+  if ($enabler->isEnabled($view->id())) {
+    if (
+      !isset($query->orderby) ||
+      !isset($query->fields) ||
+      !isset($query->fields['node__field_country_field_country_value_country_name_sort'])
+    ) {
+      return;
+    }
+    $query->fields['node__field_set_country_top'] = [
+      'field' => "CASE WHEN node__field_country.field_country_value = 'CH' THEN 1 ELSE 2 END ",
+      'alias' => 'node__field_set_country_top',
+    ];
+    $newOrderBy = [];
+    $blacklistedFields = [
+      'node_field_data_created',
+      'node__field_country.field_country_value',
+      'node__field_country_field_country_value_country_name_sort'
+    ];
+    foreach ($query->orderby as $key => $orderby) {
+      if (!in_array($orderby['field'], $blacklistedFields)) {
+        $newOrderBy[] = $orderby;
+      }
+    }
+    $newOrderBy[] = [
+      'field' => "node__field_set_country_top",
+      'direction' => 'ASC',
+    ];
+    $query->orderby = $newOrderBy;
+  }
+}

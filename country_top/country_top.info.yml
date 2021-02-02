@@ -1,0 +1,8 @@
+
+name: 'Set Country Top'
+type: module
+description: 'Alters the query to a view to set country at top'
+package: 'Country'
+core_version_requirement: ^8.8 || ^9
+version: '8.x-1.0'
+configure: country_top.admin_settings
